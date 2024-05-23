@@ -1,0 +1,53 @@
+# ATPROTO
+ROOT
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+nvm install --lts
+npm install -g pnpm
+apt install jq
+
+git clone https://github.com/bluesky-social/atproto.git
+cd atproto
+pnpm i
+pnpm build
+
+docker run --name bluesky -e POSTGRES_PASSWORD=password -e POSTGRES_USER=pg -e POSTGRES_DB=postgres -d -p 5433:5432 postgres
+nano /home/noroot/app/atproto/packages/dev-infra/_common.sh
+[docker compose -> docker-compose]
+cd /home/noroot/app/atproto/packages/dev-env
+pnpm start
+
+# SOCIAL APP
+curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+sudo apt update && sudo apt install yarn
+
+sudo apt install golang
+
+cd social-app
+yarn && yarn build-web
+cd bskyweb
+go mod tidy
+go build -v -tags timetzdata -o bskyweb ./cmd/bskyweb
+./bskyweb serve --appview-host=https://public.api.bsky.app
+http://localhost:8100/
+
+-------------------------------
+
+[ERROR AT-PROTO]
+docker compose --file $compose_file ps --format json --status running
+
+
+docker
+docker compose
+jq
+pnpm
+yarn
+go
+git bash
+
+
+sudo docker ps 
+sudo docker start 472c84eb87a8
+sudo docker stop 472c84eb87a8
+
+
